@@ -1,0 +1,14 @@
+name: "Manual - Test Features"
+on:
+  push: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Install latest devcontainer CLI"
+        run: npm install -g @devcontainers/cli
+
+      - run: devcontainer features test --features docker-in-docker --base-image ubuntu:focal --log-level info --filter iptables .
