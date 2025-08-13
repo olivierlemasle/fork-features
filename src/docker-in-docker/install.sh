@@ -217,19 +217,6 @@ if ! type git > /dev/null 2>&1; then
     check_packages git
 fi
 
-# Swap to legacy iptables for compatibility
-echo "tmpfoo: testing iptables-legacy"
-iptables-legacy -L
-if type iptables-legacy > /dev/null 2>&1 && iptables-legacy -L > /dev/null 2>&1; then
-    echo "tmpfoo: Using update-alternatives to use iptables-legacy"
-    update-alternatives --set iptables /usr/sbin/iptables-legacy
-    update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-else
-    echo "tmpfoo: Not using update-alternatives"
-fi
-
-
-
 # Set up the necessary apt repos (either Microsoft's or Docker's)
 if [ "${USE_MOBY}" = "true" ]; then
 
@@ -564,6 +551,12 @@ dockerd_start="AZURE_DNS_AUTO_DETECTION=${AZURE_DNS_AUTO_DETECTION} DOCKER_DEFAU
     done
 
     # -- End: dind wrapper script --
+
+    # Swap to legacy iptables for compatibility
+    if type iptables-legacy > /dev/null 2>&1 && iptables-legacy -L > /dev/null 2>&1; then
+        update-alternatives --set iptables /usr/sbin/iptables-legacy
+        update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+    fi
 
     # Handle DNS
     set +e
